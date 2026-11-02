@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
-import { api, USE_FIREBASE } from "@/lib/db";
+import { api } from "@/lib/db";
 import LoadingScreen from "@/components/LoadingScreen";
 import ThemeToggle from "@/components/ThemeToggle";
 import RecaptchaBox from "@/components/RecaptchaBox";
@@ -35,8 +35,7 @@ export default function LoginPage() {
   const capAdminRef = useRef(null);
   const { loginPetugas, loginOrtu } = useAuth();
   const router = useRouter();
-  const [demoNote, setDemoNote] = useState(false);
-  useEffect(() => setDemoNote(!USE_FIREBASE), []);
+
 
   function switchMode(to) {
     if (to === mode) return;
@@ -246,12 +245,6 @@ export default function LoginPage() {
           </span>
         </div>
       </div>
-
-      {demoNote && (
-        <p className="lg-note">
-          Mode demo — data tersimpan di browser ini (Firebase belum dikonfigurasi).
-        </p>
-      )}
 
       {loading && <LoadingScreen overlay label="Memeriksa akun..." />}
     </div>

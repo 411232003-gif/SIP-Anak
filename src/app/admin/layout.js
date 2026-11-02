@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
-import { api, DEFAULT_PROFIL, USE_FIREBASE, ROLE_LABEL } from "@/lib/db";
+import { api, DEFAULT_PROFIL, ROLE_LABEL } from "@/lib/db";
 import LoadingScreen from "@/components/LoadingScreen";
 import BottomNav from "@/components/BottomNav";
 import BackButton from "@/components/BackButton";
@@ -16,8 +16,6 @@ export default function AdminLayout({ children }) {
   const pathname = usePathname();
   const isBeranda = pathname === "/admin" || pathname === "/admin/beranda";
   const [posyandu, setPosyandu] = useState(DEFAULT_PROFIL.namaPosyandu);
-  const [demoBanner, setDemoBanner] = useState(false);
-  useEffect(() => setDemoBanner(!USE_FIREBASE), []);
 
   useEffect(() => {
     if (!loading && (!user || user.role !== "petugas")) router.replace("/login");
@@ -54,12 +52,6 @@ export default function AdminLayout({ children }) {
           {isBeranda ? <ThemeToggle /> : <BackButton href="/admin/beranda" />}
         </div>
       </header>
-
-      {demoBanner && (
-        <div className="bg-amber-50 px-3 py-2 text-center text-xs text-amber-700">
-          Mode demo — Firebase belum dikonfigurasi, data tersimpan di browser ini.
-        </div>
-      )}
 
       <main className="mx-auto w-full max-w-7xl px-3 pb-28 pt-4 sm:px-6 sm:pt-6 md:pb-32">
         {children}
