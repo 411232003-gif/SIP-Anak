@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
-import { api, USE_FIREBASE } from "@/lib/db";
+import { api } from "@/lib/db";
 import { umurLabel, formatTglLahir } from "@/lib/utils";
 import { pushSupported, pushReady, getPushSubscription, enablePush, disablePush } from "@/lib/push";
 import GantiPinModal from "@/components/GantiPinModal";

@@ -16,6 +16,8 @@ export default function AdminLayout({ children }) {
   const pathname = usePathname();
   const isBeranda = pathname === "/admin" || pathname === "/admin/beranda";
   const [posyandu, setPosyandu] = useState(DEFAULT_PROFIL.namaPosyandu);
+  const [demoBanner, setDemoBanner] = useState(false);
+  useEffect(() => setDemoBanner(!USE_FIREBASE), []);
 
   useEffect(() => {
     if (!loading && (!user || user.role !== "petugas")) router.replace("/login");
@@ -53,7 +55,7 @@ export default function AdminLayout({ children }) {
         </div>
       </header>
 
-      {!USE_FIREBASE && (
+      {demoBanner && (
         <div className="bg-amber-50 px-3 py-2 text-center text-xs text-amber-700">
           Mode demo — Firebase belum dikonfigurasi, data tersimpan di browser ini.
         </div>

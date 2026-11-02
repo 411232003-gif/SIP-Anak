@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { api, USE_FIREBASE } from "@/lib/db";
@@ -35,6 +35,8 @@ export default function LoginPage() {
   const capAdminRef = useRef(null);
   const { loginPetugas, loginOrtu } = useAuth();
   const router = useRouter();
+  const [demoNote, setDemoNote] = useState(false);
+  useEffect(() => setDemoNote(!USE_FIREBASE), []);
 
   function switchMode(to) {
     if (to === mode) return;
@@ -245,7 +247,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {!USE_FIREBASE && (
+      {demoNote && (
         <p className="lg-note">
           Mode demo — data tersimpan di browser ini (Firebase belum dikonfigurasi).
         </p>
