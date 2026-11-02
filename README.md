@@ -48,4 +48,4 @@ Aturan keamanan: `firestore.rules` (deploy via `firebase deploy`).
 - **Ibu hamil**: HPHT → usia kehamilan otomatis, input ANC (TD, LILA, TFU).
 - **Laporan**: rekap per RW, tren bulanan, export Excel/PDF untuk Puskesmas.
 - **PWA + push**: installable, offline cache, notifikasi jadwal/edaran/hasil ukur.
-EOF
+EOF# SIP-Anak
