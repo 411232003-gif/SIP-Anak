@@ -5,7 +5,13 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { api } from "@/lib/db";
 import { umurLabel, formatTglLahir } from "@/lib/utils";
-import { pushSupported, pushReady, getPushSubscription, enablePush, disablePush } from "@/lib/push";
+import {
+  pushReady,
+  getPushSubscription,
+  enablePush,
+  disablePush,
+  testPush,
+} from "@/lib/push";
 import GantiPinModal from "@/components/GantiPinModal";
 import { MiniSpinner } from "@/components/LoadingScreen";
 
@@ -53,6 +59,24 @@ export default function ProfilOrtuPage() {
     }
   }
 
+  async function sendTestPush() {
+    if (pushBusy) return;
+    setPushBusy(true);
+    setPushMsg("");
+    try {
+      const result = await testPush();
+      if (result.sent) {
+        setPushMsg("Notifikasi percobaan terkirim. Periksa notifikasi perangkat Anda.");
+      } else {
+        setPushMsg(result.error || result.reason || "Notifikasi percobaan tidak terkirim.");
+      }
+    } catch (e) {
+      setPushMsg(e?.message || "Gagal mengirim notifikasi percobaan");
+    } finally {
+      setPushBusy(false);
+    }
+  }
+
   function handleLogout() {
     logout();
     router.replace("/login");
@@ -95,17 +119,28 @@ export default function ProfilOrtuPage() {
         {pushStatus === "unsupported" ? (
           <p className="mt-2 text-xs text-gray-400">Perangkat ini tidak mendukung notifikasi.</p>
         ) : (
-          <button
-            onClick={togglePush}
-            disabled={pushBusy}
-            className={`mt-3 w-full rounded-lg py-2.5 text-sm font-semibold ${
-              pushStatus === "subscribed"
-                ? "border border-red-300 text-red-600 hover:bg-red-50"
-                : "bg-pink-600 text-white hover:bg-pink-700"
-            } disabled:opacity-50`}
-          >
-            {pushBusy ? <MiniSpinner /> : pushStatus === "subscribed" ? "Matikan Notifikasi" : "Aktifkan Notifikasi"}
-          </button>
+          <>
+            <button
+              onClick={togglePush}
+              disabled={pushBusy}
+              className={`mt-3 w-full rounded-lg py-2.5 text-sm font-semibold ${
+                pushStatus === "subscribed"
+                  ? "border border-red-300 text-red-600 hover:bg-red-50"
+                  : "bg-pink-600 text-white hover:bg-pink-700"
+              } disabled:opacity-50`}
+            >
+              {pushBusy ? <MiniSpinner /> : pushStatus === "subscribed" ? "Matikan Notifikasi" : "Aktifkan Notifikasi"}
+            </button>
+            {pushStatus === "subscribed" && (
+              <button
+                onClick={sendTestPush}
+                disabled={pushBusy}
+                className="mt-2 w-full rounded-lg border border-pink-300 py-2 text-sm font-semibold text-pink-700 hover:bg-pink-50 disabled:opacity-50"
+              >
+                {pushBusy ? <MiniSpinner /> : "Kirim Notifikasi Percobaan"}
+              </button>
+            )}
+          </>
         )}
         {pushMsg && <p className="mt-2 text-xs text-gray-600">{pushMsg}</p>}
       </div>
