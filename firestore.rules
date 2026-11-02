@@ -1,0 +1,114 @@
+rules_version = '2';
+
+  // SIP-Anak — login memakai Firebase Authentication:
+  //   petugas (Admin/Nakes/Kader) : akun email/password biasa; role diverifikasi
+  //                   lewat dokumen `users/{uid}` dengan field role ∈ admin|nakes|kader
+  //                   (doc ID = UID Auth). Hanya "admin" yang mengelola akun petugas,
+  //                   data anak/ibu, config, dan sesi.
+  //   orang tua     : email sintetis "<nik-anak>@sipanak.app"; hanya boleh akses
+  //                   dokumen yang memuat NIK anaknya.
+  // Jika NEXT_PUBLIC_ORTU_EMAIL_DOMAIN diubah, sesuaikan regex di isOrtuMail().
+  //
+  // BOOTSTRAP admin pertama (sekali saja, via Firebase Console):
+  //   1. Authentication → Add user → email bebas (mis. admin@petugas.sipanak.app
+  //      agar bisa login via username "admin", atau email asli untuk login via email)
+  //   2. Firestore → koleksi `users`, Document ID = UID user tsb, field:
+  //        role = "admin", username = "admin", nama = "Admin"
+  //   3. Login di aplikasi dengan username/email + password tersebut.
+  service cloud.firestore {
+    match /databases/{database}/documents {
+
+      function signedIn() { return request.auth != null; }
+      function authEmail() { return request.auth.token.email; }
+      // bagian sebelum '@' pada email sintetis (NIK anak)
+      function authName() { return authEmail().split('@')[0]; }
+      function isOrtuMail() { return authEmail().matches('^[^@]+@sipanak\\.app$'); }
+      function userRole() {
+        return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+      }
+      // petugas = punya dokumen users/<uid> dengan role petugas
+      function isPetugas() {
+        return signedIn()
+          && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+          && userRole() in ["admin", "nakes", "kader"];
+      }
+      function isAdmin() {
+        return signedIn()
+          && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+          && userRole() == "admin";
+      }
+      // ortu pemilik dokumen: field nik dokumen == NIK pada email sintetisnya
+      function isOwnerDoc() {
+        return signedIn() && isOrtuMail() && resource.data.nik == authName();
+      }
+
+      match /users/{uid} {
+        allow get: if isPetugas() || (signedIn() && request.auth.uid == uid);
+        allow list: if isAdmin();
+        allow create, update: if isAdmin()
+          && request.resource.data.role in ["admin", "nakes", "kader"];
+        allow delete: if isAdmin();
+      }
+
+      match /anak/{nik} {
+        allow get: if isPetugas() || isOwnerDoc() || (signedIn() && isOrtuMail() && authName() == nik);
+        allow list: if isPetugas() || isOwnerDoc();
+        allow create, delete: if isPetugas();
+        // ortu hanya boleh mengganti field `pin` pada dokumennya sendiri
+        allow update: if isPetugas()
+          || (signedIn() && isOrtuMail() && authName() == nik
+              && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['pin'])
+              && request.resource.data.pin is string
+              && request.resource.data.pin.size() >= 6);
+      }
+
+      match /ibu/{nik} {
+        // data ibu hamil/nifas bersifat sensitif — hanya petugas
+        allow read, write: if isPetugas();
+      }
+
+      match /kunjunganIbu/{id} {
+        allow read, write: if isPetugas();
+      }
+
+      match /kehadiran/{id} {
+        allow get, list: if isPetugas() || isOwnerDoc();
+        allow create, update, delete: if isPetugas();
+      }
+
+      match /pengukuran/{id} {
+        allow get, list: if isPetugas() || isOwnerDoc();
+        allow create, update, delete: if isPetugas();
+      }
+
+      match /imunisasi/{id} {
+        allow get, list: if isPetugas() || isOwnerDoc();
+        allow create, update, delete: if isPetugas();
+      }
+
+      match /sesi/{id} {
+        allow read: if signedIn();
+        allow create, update, delete: if isPetugas();
+      }
+
+      match /edaran/{id} {
+        allow read: if signedIn();
+        allow create, update, delete: if isPetugas();
+      }
+
+      // Subscription Web Push per perangkat ortu — ortu membuat/menghapus
+      // miliknya sendiri; petugas membacanya untuk mengirim notifikasi.
+      match /pushSubs/{id} {
+        allow create: if signedIn() && isOrtuMail()
+          && request.resource.data.nik == authName();
+        allow update: if isPetugas() || isOwnerDoc();
+        allow list: if isPetugas();
+        allow get, delete: if isPetugas() || isOwnerDoc();
+      }
+
+      match /config/{id} {
+        allow read: if signedIn();
+        allow create, update, delete: if isAdmin();
+      }
+    }
+  }
