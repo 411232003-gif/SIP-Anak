@@ -7,7 +7,6 @@ import { api, USE_FIREBASE } from "@/lib/db";
 import LoadingScreen from "@/components/LoadingScreen";
 import ThemeToggle from "@/components/ThemeToggle";
 import RecaptchaBox from "@/components/RecaptchaBox";
-import SakuraFall from "@/components/SakuraFall";
 
 const CAPTCHA_ON = Boolean(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY);
 
@@ -21,38 +20,8 @@ async function verifyCaptcha(token) {
   return Boolean(d.success);
 }
 
-function IdCardIcon() {
-  return (
-    <svg viewBox="0 0 24 24">
-      <rect x="3" y="5" width="18" height="14" rx="2" />
-      <circle cx="8.5" cy="11" r="1.8" />
-      <path d="M5.8 16c.5-1.4 1.6-2 2.7-2s2.2.6 2.7 2" />
-      <path d="M14.5 10h4" />
-      <path d="M14.5 13.5h4" />
-    </svg>
-  );
-}
-
-function LockIcon() {
-  return (
-    <svg viewBox="0 0 24 24">
-      <rect x="5" y="11" width="14" height="9" rx="2" />
-      <path d="M8 11V7a4 4 0 0 1 8 0v4" />
-    </svg>
-  );
-}
-
-function UserIcon() {
-  return (
-    <svg viewBox="0 0 24 24">
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4 21v-1a8 8 0 0 1 16 0v1" />
-    </svg>
-  );
-}
-
 export default function LoginPage() {
-  const [flipped, setFlipped] = useState(false);
+  const [mode, setMode] = useState("ortu"); // "ortu" | "petugas"
   const [nik, setNik] = useState("");
   const [pin, setPin] = useState("");
   const [username, setUsername] = useState("");
@@ -67,8 +36,9 @@ export default function LoginPage() {
   const { loginPetugas, loginOrtu } = useAuth();
   const router = useRouter();
 
-  function flip(toAdmin) {
-    setFlipped(toAdmin);
+  function switchMode(to) {
+    if (to === mode) return;
+    setMode(to);
     setError("");
     setResetMsg("");
   }
@@ -129,7 +99,7 @@ export default function LoginPage() {
     }
   }
 
-  async function handleAdmin(e) {
+  async function handlePetugas(e) {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -158,135 +128,126 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="login-wrapper">
-      <SakuraFall />
-
+    <div className="lg-hero">
       <div className="tm-corner">
         <ThemeToggle />
       </div>
 
-      <div className="login-brand">
-        <h2>SIP-Anak</h2>
-        <span className="live-badge" title="Sistem sedang aktif">
-          <span className="live-dot" aria-hidden="true" />
-          LIVE
-        </span>
-      </div>
+      <div className="lg-card">
+        <h1>SIP-Anak</h1>
+        <h2>Selamat Datang</h2>
+        <p>
+          Masuk untuk memantau KMS digital, imunisasi,
+          dan tumbuh kembang si kecil di posyandu.
+        </p>
 
-      <div className={`flip-scene ${flipped ? "flipped" : ""}`}>
-        <div className="flip-card">
-          {/* DEPAN — LOGIN ORANG TUA */}
-          <div className="glass-circle front">
-            <form className="login-form" onSubmit={handleOrtu}>
-              <h1>Login</h1>
-              <div className="subtitle">Masuk sebagai Orang Tua</div>
+        {/* Pemilih peran — gaya countdown glass */}
+        <div className="lg-roles">
+          <button
+            type="button"
+            className={`lg-role ${mode === "ortu" ? "active" : ""}`}
+            onClick={() => switchMode("ortu")}
+          >
+            <span>Orang Tua</span>
+            <small>NIK ANAK</small>
+          </button>
+          <button
+            type="button"
+            className={`lg-role ${mode === "petugas" ? "active" : ""}`}
+            onClick={() => switchMode("petugas")}
+          >
+            <span>Petugas</span>
+            <small>KADER · NAKES · ADMIN</small>
+          </button>
+        </div>
 
-              <div className="input-box">
-                <span className="ico"><IdCardIcon /></span>
-                <input
-                  type="text"
-                  placeholder="NIK Anak"
-                  inputMode="numeric"
-                  autoComplete="off"
-                  value={nik}
-                  onChange={(e) => setNik(e.target.value.replace(/\D/g, ""))}
-                />
-              </div>
+        {mode === "ortu" ? (
+          <form className="lg-form" onSubmit={handleOrtu}>
+            <input
+              type="text"
+              className="lg-input"
+              placeholder="NIK Anak"
+              inputMode="numeric"
+              autoComplete="off"
+              value={nik}
+              onChange={(e) => setNik(e.target.value.replace(/\D/g, ""))}
+            />
+            <input
+              type="password"
+              className="lg-input"
+              placeholder="Kata sandi"
+              autoComplete="current-password"
+              value={pin}
+              onChange={(e) => setPin(e.target.value)}
+            />
+            {error && <p className="login-error">{error}</p>}
+            <RecaptchaBox ref={capOrtuRef} onToken={setCapOrtu} />
+            <button
+              type="submit"
+              className="lg-join"
+              disabled={loading || (CAPTCHA_ON && !capOrtu)}
+            >
+              Masuk
+            </button>
+          </form>
+        ) : (
+          <form className="lg-form" onSubmit={handlePetugas}>
+            <input
+              type="text"
+              className="lg-input"
+              placeholder="Email atau username petugas"
+              autoComplete="off"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <input
+              type="password"
+              className="lg-input"
+              placeholder="Password"
+              autoComplete="off"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            {error && <p className="login-error">{error}</p>}
+            {resetMsg && <p className="login-success">{resetMsg}</p>}
+            <RecaptchaBox ref={capAdminRef} onToken={setCapAdmin} />
+            <button
+              type="submit"
+              className="lg-join"
+              disabled={loading || (CAPTCHA_ON && !capAdmin)}
+            >
+              Masuk
+            </button>
+            <button type="button" className="lg-link" onClick={handleReset} disabled={loading}>
+              Lupa password?
+            </button>
+          </form>
+        )}
 
-              <div className="input-box">
-                <span className="ico"><LockIcon /></span>
-                <input
-                  type="password"
-                  placeholder="Kata sandi"
-                  autoComplete="current-password"
-                  value={pin}
-                  onChange={(e) => setPin(e.target.value)}
-                />
-              </div>
+        <div className="lg-privacy">
+          🔒 Data Anda aman — hanya petugas berwenang yang bisa mengakses.
+        </div>
 
-              {error && !flipped && <p className="login-error">{error}</p>}
-
-              <RecaptchaBox ref={capOrtuRef} onToken={setCapOrtu} />
-
-              <button
-                type="submit"
-                className="login-btn"
-                disabled={loading || (CAPTCHA_ON && !capOrtu)}
-              >
-                Masuk
-              </button>
-
-              <div className="signup-text flip-link">
-                Kader / Petugas Posyandu?{" "}
-                <button type="button" onClick={() => flip(true)}>
-                  Login Petugas
-                </button>
-              </div>
-            </form>
-          </div>
-
-          {/* BELAKANG — LOGIN PETUGAS */}
-          <div className="glass-circle back">
-            <form className="login-form" onSubmit={handleAdmin}>
-              <h1>Petugas</h1>
-              <div className="subtitle">Admin · Nakes · Kader Posyandu</div>
-
-              <div className="input-box">
-                <span className="ico"><UserIcon /></span>
-                <input
-                  type="text"
-                  placeholder="Email atau username"
-                  autoComplete="off"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-              </div>
-
-              <div className="input-box">
-                <span className="ico"><LockIcon /></span>
-                <input
-                  type="password"
-                  placeholder="Password"
-                  autoComplete="off"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-
-              {error && flipped && <p className="login-error">{error}</p>}
-              {resetMsg && flipped && <p className="login-success">{resetMsg}</p>}
-
-              <RecaptchaBox ref={capAdminRef} onToken={setCapAdmin} />
-
-              <button
-                type="submit"
-                className="login-btn"
-                disabled={loading || (CAPTCHA_ON && !capAdmin)}
-              >
-                Masuk
-              </button>
-
-              <div className="signup-text">
-                <button type="button" onClick={handleReset} disabled={loading}>
-                  Lupa password?
-                </button>
-              </div>
-
-              <div className="signup-text flip-link">
-                Bukan petugas?{" "}
-                <button type="button" onClick={() => flip(false)}>
-                  Login Orang Tua
-                </button>
-              </div>
-            </form>
-          </div>
+        {/* Chip fitur — pengganti baris sosial */}
+        <div className="lg-socials">
+          <span className="lg-chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18"/><path d="M7 15v3"/><path d="M12 10v8"/><path d="M17 6v12"/></svg>
+          </span>
+          <span className="lg-chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3a2.4 2.4 0 0 1-3.4 0l-.6-.6a2.4 2.4 0 0 1 0-3.4L15 5"/><path d="m9 11 4 4"/><path d="m5 19-3 3"/><path d="m14 4 6 6"/></svg>
+          </span>
+          <span className="lg-chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 8h18M8 11h4M8 14h6"/></svg>
+          </span>
+          <span className="lg-chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 21c-4-3.5-8-6.6-8-10.5a4.5 4.5 0 0 1 8-2.8 4.5 4.5 0 0 1 8 2.8c0 3.9-4 7-8 10.5z"/></svg>
+          </span>
         </div>
       </div>
 
       {!USE_FIREBASE && (
-        <p className="login-note">
-          Firebase belum dikonfigurasi — berjalan dalam mode demo
-          (data tersimpan di browser ini).
+        <p className="lg-note">
+          Mode demo — data tersimpan di browser ini (Firebase belum dikonfigurasi).
         </p>
       )}
 
