@@ -128,6 +128,18 @@ async function verifyPetugas(a, password) {
   return a && (await hashPassword(password, a.salt)) === a.passHash ? a : null;
 }
 
+// Akun petugas bawaan mode demo — dibuat sekali saat storage kosong
+// supaya halaman petugas langsung bisa dicoba tanpa Firebase.
+// Kredensial: username "admin", password "admin123" (role admin).
+const DEMO_PETUGAS = { username: "admin", nama: "Admin Posyandu", email: "admin@sipanak.demo", password: "admin123", role: "admin" };
+
+async function ensureDemoPetugas() {
+  const d = readLocal();
+  if (d.petugas.length) return;
+  d.petugas.push(await buildPetugasRecord(DEMO_PETUGAS));
+  writeLocal(d);
+}
+
 const local = {
   /* ----- Anak ----- */
   async listAnak() {
@@ -400,6 +412,7 @@ const local = {
 
   /* ----- Petugas ----- */
   async listPetugas() {
+    await ensureDemoPetugas();
     return [...readLocal().petugas]
       .sort((a, b) => a.username.localeCompare(b.username))
       .map(stripPetugas);
@@ -419,6 +432,7 @@ const local = {
     writeLocal(d);
   },
   async loginPetugas(username, password) {
+    await ensureDemoPetugas();
     const key = String(username || "").trim().toLowerCase();
     const a = readLocal().petugas.find(
       (x) => x.username === key || x.email === key
