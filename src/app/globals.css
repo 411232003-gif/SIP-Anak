@@ -191,6 +191,14 @@ body::before {
   filter: drop-shadow(0 2px 6px rgba(120, 5, 60, 0.4));
 }
 
+.lp-logo-box img {
+  width: 68%;
+  height: 68%;
+  border-radius: 19px;
+  object-fit: cover;
+  filter: drop-shadow(0 2px 6px rgba(120, 5, 60, 0.24));
+}
+
 @keyframes lp-float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
@@ -392,6 +400,17 @@ body::before {
   color: #ffffff;
   text-shadow: 0 0 25px rgba(255, 255, 255, 0.9);
   letter-spacing: 0.5px;
+}
+
+.lg-brand-logo {
+  display: block;
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 12px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 18px;
+  object-fit: cover;
+  box-shadow: 0 8px 20px rgba(109, 16, 64, 0.35);
 }
 
 .lg-card h2 {
@@ -618,6 +637,7 @@ body::before {
 @media (max-width: 560px) {
   .lg-card { padding: 36px 24px 32px; border-radius: 22px; }
   .lg-role { min-width: 0; flex: 1; }
+  .lg-brand-logo { width: 50px; height: 50px; border-radius: 15px; }
 }
 
 @media (max-width: 380px) {
@@ -1356,6 +1376,157 @@ body::before {
 }
 .dark .b3-title { color: #ffe3f1; }
 .dark .b3-sub { color: #d98ab4; }
+
+/* ============================================================
+   BANNER BERANDA — artwork responsif dari aset SIP-Anak
+   ============================================================ */
+.banner-carousel {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+}
+
+.banner-art {
+  position: relative;
+  width: 100%;
+  max-height: 380px;
+  aspect-ratio: 1856 / 576;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 24px;
+  background-color: #f9b4d0;
+  background-image: url("/banner-desktop.webp");
+  background-position: center;
+  background-size: cover;
+  box-shadow:
+    0 14px 30px rgba(164, 28, 93, 0.18),
+    0 4px 0 rgba(236, 158, 198, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.banner-art__shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 65%, rgba(83, 20, 54, 0.14));
+}
+
+.banner-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  transform: translateY(-50%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  color: #a31660;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 4px 14px rgba(83, 20, 54, 0.2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.banner-arrow svg {
+  width: 18px;
+  height: 18px;
+}
+
+.banner-arrow--left { left: 12px; }
+.banner-arrow--right { right: 12px; }
+.banner-arrow.visible { opacity: 1; pointer-events: auto; }
+.banner-arrow:hover { transform: translateY(-50%) scale(1.06); }
+
+.banner-dots {
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+  z-index: 2;
+  display: flex;
+  gap: 6px;
+  padding: 7px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  background: rgba(92, 20, 57, 0.3);
+  backdrop-filter: blur(8px);
+}
+
+.banner-dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: 0;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.68);
+  transition: width 0.2s ease, background 0.2s ease;
+}
+
+.banner-dot.active {
+  width: 20px;
+  background: #ffffff;
+}
+
+.banner-caption {
+  min-height: 86px;
+  padding: 14px 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.88);
+  border-radius: 18px;
+  color: #ffffff;
+  background: linear-gradient(110deg, #bd236d 0%, #e83e91 55%, #f176aa 100%);
+  box-shadow:
+    0 8px 18px rgba(164, 28, 93, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.banner-caption__slide {
+  display: none;
+  min-width: 0;
+  animation: banner-caption-in 0.45s ease both;
+}
+
+.banner-caption__slide.active { display: block; }
+
+@keyframes banner-caption-in {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 639px) {
+  .banner-art {
+    aspect-ratio: 1456 / 720;
+    background-image: url("/banner-mobile.webp");
+    border-radius: 20px;
+  }
+
+  .banner-arrow {
+    width: 34px;
+    height: 34px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .banner-arrow--left { left: 8px; }
+  .banner-arrow--right { right: 8px; }
+
+  .banner-dots {
+    right: 10px;
+    bottom: 9px;
+  }
+
+  .banner-caption {
+    min-height: 78px;
+    padding: 12px 14px;
+    border-radius: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner-caption__slide { animation: none; }
+}
 
 /* ============================================================
    CETAK — hanya .print-sheet yang tampil saat print

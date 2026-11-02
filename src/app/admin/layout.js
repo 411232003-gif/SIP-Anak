@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { api, DEFAULT_PROFIL, ROLE_LABEL } from "@/lib/db";
@@ -36,12 +37,14 @@ export default function AdminLayout({ children }) {
       <header className="sticky top-0 z-40 border-b border-pink-100 bg-white/90 pt-[env(safe-area-inset-top)] backdrop-blur">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-3 py-3 sm:px-6">
           <Link href="/admin/beranda" className="flex min-w-0 items-center gap-2">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-pink-600 shadow-md shadow-pink-300">
-              <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <circle cx="12" cy="9" r="4" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 9h.01M15 9h.01M6 20c1-1.8 3.2-3 6-3s5 1.2 6 3" />
-              </svg>
-            </div>
+            <Image
+              src="/icons/icon-192.png"
+              alt=""
+              width={40}
+              height={40}
+              className="h-10 w-10 shrink-0 rounded-xl object-cover shadow-md shadow-pink-300"
+              priority
+            />
             <div className="min-w-0">
               <p className="truncate text-sm font-bold text-gray-900 sm:text-base">SIP-Anak</p>
               <p className="truncate text-xs text-pink-600">

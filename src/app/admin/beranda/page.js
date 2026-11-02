@@ -96,16 +96,16 @@ export default function BerandaAdminPage() {
   return (
     <div className="space-y-5">
       <BannerCarousel
-        className="h-48 sm:h-56 md:h-72"
+        className="admin-home-banner"
         overlays={[
           <>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-pink-100">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white">
               {profil.namaPosyandu} · {profil.namaKelurahan?.replace(/^kelurahan\s*/i, "")}
             </p>
             <h1 className="mt-1 text-xl font-bold drop-shadow sm:text-2xl">
               Selamat bertugas, {user?.nama || "Petugas"}
             </h1>
-            <p className="mt-1 text-sm text-pink-50">{tanggalIndo()}</p>
+            <p className="mt-1 text-sm text-white">{tanggalIndo()}</p>
 
             <div className="mt-4 flex flex-wrap gap-2">
               {stats ? (
@@ -125,7 +125,7 @@ export default function BerandaAdminPage() {
             </div>
           </>,
           <>
-            <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-pink-100">
+            <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white">
               <MegaphoneIcon /> Surat Edaran Terbaru
             </p>
             {latestEdaran ? (
@@ -133,7 +133,7 @@ export default function BerandaAdminPage() {
                 <h1 className="mt-1 line-clamp-2 max-w-lg text-xl font-bold drop-shadow sm:text-2xl">
                   {latestEdaran.judul}
                 </h1>
-                <p className="mt-1 text-sm text-pink-50">
+                <p className="mt-1 text-sm text-white">
                   {formatTglLahir(latestEdaran.tanggal)}
                   {latestEdaran.nomor ? ` · No. ${latestEdaran.nomor}` : ""}
                 </p>
@@ -149,7 +149,7 @@ export default function BerandaAdminPage() {
                 <h1 className="mt-1 text-xl font-bold drop-shadow sm:text-2xl">
                   Pengumuman Posyandu
                 </h1>
-                <p className="mt-1 max-w-md text-sm text-pink-50">
+                <p className="mt-1 max-w-md text-sm text-white">
                   Belum ada surat edaran yang diterbitkan.
                 </p>
                 <Link

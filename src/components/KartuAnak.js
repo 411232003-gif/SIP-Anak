@@ -9,7 +9,7 @@ export function qrValue(anak) {
 }
 
 export default function KartuAnak({ anak, profil }) {
-  const logo = profil.logo || "/icon.png";
+  const logo = profil.logo || "/icons/icon-192.png";
 
   return (
     <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-pink-500 via-pink-600 to-fuchsia-600 text-white shadow-lg">

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useAuth } from "@/lib/auth";
 import { api } from "@/lib/db";
 import LoadingScreen from "@/components/LoadingScreen";
@@ -135,6 +136,14 @@ export default function LoginPage() {
       </div>
 
       <div className="lg-card">
+        <Image
+          src="/icons/icon-192.png"
+          alt=""
+          width={76}
+          height={76}
+          className="lg-brand-logo"
+          priority
+        />
         <h1>SIP-Anak</h1>
         <h2>Selamat Datang</h2>
         <p>

@@ -1,9 +1,11 @@
-const CACHE = "sipanak-v1";
+const CACHE = "sipanak-v2";
 const PRECACHE = [
   "/",
   "/login",
   "/manifest.webmanifest",
   "/icon.png",
+  "/banner-desktop.webp",
+  "/banner-mobile.webp",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
   "/icons/icon-192-maskable.png",

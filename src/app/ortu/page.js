@@ -63,21 +63,21 @@ export default function OrtuPage() {
   return (
     <div className="space-y-4">
       <BannerCarousel
-        className="h-44 sm:h-56 md:h-64"
+        className="parent-home-banner"
         overlays={[
           <>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-pink-100">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white">
               {profil.namaPosyandu} · {profil.namaKelurahan?.replace(/^kelurahan\s*/i, "")}
             </p>
             <h1 className="mt-1 text-xl font-bold drop-shadow sm:text-2xl">
               Halo, Ayah/Bunda {anak?.namaIbu || user.nama}
             </h1>
-            <p className="mt-1 text-sm text-pink-50">
+            <p className="mt-1 text-sm text-white">
               {tanggalIndo()} — pantau tumbuh kembang {anak?.nama || "buah hati Anda"} di sini.
             </p>
           </>,
           <>
-            <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-pink-100">
+            <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 shrink-0">
                 <path d="M3 10v4a1 1 0 0 0 1 1h2l5 4V5L6 9H4a1 1 0 0 0-1 1z" />
                 <path d="M15 9a3.5 3.5 0 0 1 0 6" />
@@ -90,7 +90,7 @@ export default function OrtuPage() {
                 <h1 className="mt-1 line-clamp-2 max-w-lg text-xl font-bold drop-shadow sm:text-2xl">
                   {sesiNext.kegiatan}
                 </h1>
-                <p className="mt-1 text-sm text-pink-50">
+                <p className="mt-1 text-sm text-white">
                   {formatTglLahir(sesiNext.tanggal)}{sesiNext.jam ? ` · ${sesiNext.jam}` : ""}{sesiNext.lokasi ? ` · ${sesiNext.lokasi}` : ""}
                 </p>
               </>
@@ -99,7 +99,7 @@ export default function OrtuPage() {
                 <h1 className="mt-1 line-clamp-2 max-w-lg text-xl font-bold drop-shadow sm:text-2xl">
                   {latestEdaran.judul}
                 </h1>
-                <p className="mt-1 text-sm text-pink-50">
+                <p className="mt-1 text-sm text-white">
                   {formatTglLahir(latestEdaran.tanggal)}
                   {latestEdaran.nomor ? ` · No. ${latestEdaran.nomor}` : ""}
                 </p>

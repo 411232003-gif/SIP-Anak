@@ -1,19 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { api, DEFAULT_PROFIL } from "@/lib/db";
-
-function BabyLogo() {
-  return (
-    <svg viewBox="0 0 24 24">
-      <circle cx="12" cy="9" r="5" />
-      <path d="M9 9h.01M15 9h.01" />
-      <path d="M10 11c.6.6 1.3.8 2 .8s1.4-.2 2-.8" />
-      <path d="M12 4V2.5c0-.5.4-1 1-1s1 .5 1 1" />
-      <path d="M6 20c1-1.8 3.2-3 6-3s5 1.2 6 3" />
-    </svg>
-  );
-}
 
 export default function LoadingScreen({ label = "Memuat...", overlay = false }) {
   const [pct, setPct] = useState(0);
@@ -35,7 +24,13 @@ export default function LoadingScreen({ label = "Memuat...", overlay = false }) 
       <div className="lp-top">
         <div className="lp-logo">
           <div className="lp-logo-box">
-            <BabyLogo />
+            <Image
+              src="/icons/icon-192.png"
+              alt="Logo SIP-Anak"
+              width={64}
+              height={64}
+              priority
+            />
           </div>
         </div>
         <div className="lp-content">
